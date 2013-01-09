@@ -4,19 +4,17 @@ var createEngine = require('voxel-engine');
 var game = createEngine({
     generateVoxelChunk: createTerrain(2, 32),
     chunkDistance: 2,
-    materials: [ 'bedrock', 'tree_side', 'leaves' ]
+    materials: [ 'bedrock', 'tree_side', 'leaves_opaque' ],
+    texturePath: './textures/'
 });
 game.controls.pitchObject.rotation.x = -1.5;
 game.appendTo('#container');
 window.game = game;
 
 var createTree = require('../');
-createTree(game, { bark: 2 });
-createTree(game, { bark: 2 });
-createTree(game, { bark: 2 });
-createTree(game, { bark: 2 });
-createTree(game, { bark: 2 });
-createTree(game, { bark: 2 });
+for (var i = 0; i < 50; i++) {
+    createTree(game, { bark: 2, leaves: 3 });
+}
 
 var explode = require('voxel-debris')(game);
 game.on('mousedown', function (pos) {

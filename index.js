@@ -2,7 +2,8 @@ module.exports = function (game, opts) {
     if (!opts) opts = {};
     if (opts.bark === undefined) opts.bark = 1;
     if (opts.leaves === undefined) opts.leaves = 2;
-    if (!opts.height) opts.height = Math.floor(Math.random() * 16) + 4;
+    if (!opts.height) opts.height = Math.random() * 16 + 4;
+    if (opts.base === undefined) opts.base = opts.height / 3;
     
     var voxels = game.voxels;
     var bounds = boundingChunks(voxels.chunks);
@@ -16,31 +17,54 @@ module.exports = function (game, opts) {
         };
     }
     
-    var pos = { x: opts.position.x, y: opts.position.y, z: opts.position.z };
+    var pos_ = { x: opts.position.x, y: opts.position.y, z: opts.position.z };
+    function position () {
+        return { x: pos_.x, y: pos_.y, z: pos_.z };
+    }
     
     var ymax = bounds.y.max * step;
     var ymin = bounds.y.min * step;
-    if (occupied(pos.y)) {
-        for (var y = pos.y; occupied(y); y += voxels.cubeSize);
+    if (occupied(pos_.y)) {
+        for (var y = pos_.y; occupied(y); y += voxels.cubeSize);
         if (y >= ymax) return false;
-        pos.y = y;
+        pos_.y = y;
     }
     else {
-        for (var y = pos.y; !occupied(y); y -= voxels.cubeSize);
+        for (var y = pos_.y; !occupied(y); y -= voxels.cubeSize);
         if (y <= ymin) return false;
-        pos.y = y + voxels.cubeSize;
+        pos_.y = y + voxels.cubeSize;
     }
     function occupied (y) {
-        var pos_ = { x: pos.x, y: y, z: pos.z };
-        return y <= ymax && y >= ymin && voxels.voxelAtPosition(pos_);
+        var pos = position();
+        pos.y = y;
+        return y <= ymax && y >= ymin && voxels.voxelAtPosition(pos);
     }
     
     var updated = {};
-    for (var y = 0; y < opts.height; y++) {
-        var pos_ = { x: pos.x, y: pos.y, z: pos.z };
-        pos_.y += y * voxels.cubeSize;
-        if (set(pos_, opts.bark)) break;
+    var around = [
+        [ 0, 1 ], [ 0, -1 ],
+        [ 1, 1 ], [ 1, 0 ], [ 1, -1 ],
+        [ -1, 1 ], [ -1, 0 ], [ -1, -1 ]
+    ];
+    for (var y = 0; y < opts.height - 1; y++) {
+        var pos = position();
+        pos.y += y * voxels.cubeSize;
+        if (set(pos, opts.bark)) break;
+        if (y < opts.base) continue;
+        around.forEach(function (offset) {
+            if (Math.random() > 0.8) return;
+            var x = offset[0] * voxels.cubeSize;
+            var z = offset[1] * voxels.cubeSize;
+            pos.x += x; pos.z += z;
+            set(pos, opts.leaves);
+            pos.x -= x; pos.z -= z;
+        });
     }
+    
+    var pos = position();
+    pos.y += y * voxels.cubeSize;
+    set(pos, opts.leaves);
+    
     Object.keys(updated).forEach(function (key) {
         game.showChunk(updated[key]);
     });
@@ -51,7 +75,9 @@ module.exports = function (game, opts) {
         voxels.voxelAtPosition(pos, value);
         var c = voxels.chunkAtPosition(pos);
         var key = c.join('|');
-        if (!updated[key]) updated[key] = voxels.chunks[key];
+        if (!updated[key] && voxels.chunks[key]) {
+            updated[key] = voxels.chunks[key];
+        }
     }
 };
 
