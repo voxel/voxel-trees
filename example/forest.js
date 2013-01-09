@@ -4,7 +4,7 @@ var createEngine = require('voxel-engine');
 var game = createEngine({
     generateVoxelChunk: createTerrain(2, 32),
     chunkDistance: 2,
-    materials: [ 'bedrock', 'tree_side', 'leaves_opaque' ],
+    materials: [ 'grass_top', 'tree_side', 'leaves_opaque' ],
     texturePath: './textures/'
 });
 game.controls.pitchObject.rotation.x = -1.5;
@@ -12,7 +12,7 @@ game.appendTo('#container');
 window.game = game;
 
 var createTree = require('../');
-for (var i = 0; i < 50; i++) {
+for (var i = 0; i < 250; i++) {
     createTree(game, { bark: 2, leaves: 3 });
 }
 

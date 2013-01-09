@@ -12,8 +12,8 @@ module.exports = function (game, opts) {
         var chunk = voxels.chunks[randomChunk(bounds)];
         opts.position = {
             x: (chunk.position[0] + Math.random()) * step,
-            y: (chunk.position[0] + Math.random()) * step,
-            z: (chunk.position[0] + Math.random()) * step
+            y: (chunk.position[1] + Math.random()) * step,
+            z: (chunk.position[2] + Math.random()) * step
         };
     }
     
@@ -52,7 +52,7 @@ module.exports = function (game, opts) {
         if (set(pos, opts.bark)) break;
         if (y < opts.base) continue;
         around.forEach(function (offset) {
-            if (Math.random() > 0.8) return;
+            if (Math.random() > 0.5) return;
             var x = offset[0] * voxels.cubeSize;
             var z = offset[1] * voxels.cubeSize;
             pos.x += x; pos.z += z;
