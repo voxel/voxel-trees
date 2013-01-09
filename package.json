@@ -1,0 +1,29 @@
+{
+    "name" : "voxel-forest",
+    "version" : "0.0.0",
+    "description" : "generate voxel trees",
+    "main" : "index.js",
+    "devDependencies" : {
+        "voxel-perlin-terrain" : "~0.0.2",
+        "voxel-engine" : "~0.1.8",
+        "voxel-debris" : "~0.0.2",
+        "ecstatic" : "~0.3.0"
+    },
+    "repository" : {
+        "type" : "git",
+        "url" : "git://github.com/substack/voxel-forest.git"
+    },
+    "homepage" : "https://github.com/substack/voxel-forest",
+    "keywords" : [
+        "voxel",
+        "game",
+        "tree",
+        "forest"
+    ],
+    "author" : {
+        "name" : "James Halliday",
+        "email" : "mail@substack.net",
+        "url" : "http://substack.net"
+    },
+    "license" : "MIT"
+}
