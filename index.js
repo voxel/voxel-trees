@@ -5,6 +5,7 @@ module.exports = function (game, opts) {
     if (!opts.height) opts.height = Math.random() * 16 + 4;
     if (opts.base === undefined) opts.base = opts.height / 3;
     if (opts.radius === undefined) opts.radius = opts.base;
+    if (opts.treetype === undefined) opts.treetype = 1;
     
     var voxels = game.voxels;
     var bounds = boundingChunks(voxels.chunks);
@@ -100,19 +101,18 @@ module.exports = function (game, opts) {
             }
         }
     }
-    if (opts.treetype === undefined) subspacetree();
-    else {
-        switch (opts.treetype) {
-            case 1:
-                subspacetree();
-                break;
-            case 2:
-                guybrushtree();
-                break;
-            default:
-                subspacetree();
-        }
+    
+    switch (opts.treetype) {
+        case 1:
+            subspacetree();
+            break;
+        case 2:
+            guybrushtree();
+            break;
+        default:
+            subspacetree();
     }
+    
     
     var pos = position();
     pos.y += y * voxels.cubeSize;
