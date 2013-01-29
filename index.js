@@ -4,6 +4,7 @@ module.exports = function (game, opts) {
     if (opts.leaves === undefined) opts.leaves = 2;
     if (!opts.height) opts.height = Math.random() * 16 + 4;
     if (opts.base === undefined) opts.base = opts.height / 3;
+    if (opts.radius === undefined) opts.radius = opts.base;
     
     var voxels = game.voxels;
     var bounds = boundingChunks(voxels.chunks);
@@ -17,9 +18,17 @@ module.exports = function (game, opts) {
         };
     }
     
-    var pos_ = { x: opts.position.x, y: opts.position.y, z: opts.position.z };
+    var pos_ = {
+        x: opts.position.x, 
+        y: opts.position.y, 
+        z: opts.position.z
+    };
     function position () {
-        return { x: pos_.x, y: pos_.y, z: pos_.z };
+        return {
+            x: pos_.x, 
+            y: pos_.y, 
+            z: pos_.z
+        };
     }
     
     var ymax = bounds.y.max * step;
@@ -41,24 +50,68 @@ module.exports = function (game, opts) {
     }
     
     var updated = {};
-    var around = [
+    
+    function subspacetree() {
+        var around = [
         [ 0, 1 ], [ 0, -1 ],
         [ 1, 1 ], [ 1, 0 ], [ 1, -1 ],
         [ -1, 1 ], [ -1, 0 ], [ -1, -1 ]
-    ];
-    for (var y = 0; y < opts.height - 1; y++) {
-        var pos = position();
-        pos.y += y * voxels.cubeSize;
-        if (set(pos, opts.bark)) break;
-        if (y < opts.base) continue;
-        around.forEach(function (offset) {
-            if (Math.random() > 0.5) return;
-            var x = offset[0] * voxels.cubeSize;
-            var z = offset[1] * voxels.cubeSize;
-            pos.x += x; pos.z += z;
-            set(pos, opts.leaves);
-            pos.x -= x; pos.z -= z;
-        });
+        ];
+        for (var y = 0; y < opts.height - 1; y++) {
+            var pos = position();
+            pos.y += y * voxels.cubeSize;
+            if (set(pos, opts.bark)) break;
+            if (y < opts.base) continue;
+            around.forEach(function (offset) {
+                if (Math.random() > 0.5) return;
+                var x = offset[0] * voxels.cubeSize;
+                var z = offset[1] * voxels.cubeSize;
+                pos.x += x;
+                pos.z += z;
+                set(pos, opts.leaves);
+                pos.x -= x;
+                pos.z -= z;
+            });
+        }
+    }
+
+    function guybrushtree() {
+        var sphere = function(x,y,z, r) {
+            return x*x + y*y + z*z <= r*r;
+        }
+        for (var y = 0; y < opts.height - 1; y++) {
+            var pos = position();
+            pos.y += y * voxels.cubeSize;
+            if (set(pos, opts.bark)) break;
+        }
+        var radius = opts.radius;
+        for (var xstep = -radius; xstep <= radius; xstep++) {
+            for (var ystep = -radius; ystep <= radius; ystep++) {
+                for (var zstep = -radius; zstep <= radius; zstep++) {
+                    if (sphere(xstep,ystep,zstep, radius)) {
+                        var leafpos = {
+                            x: pos.x + (xstep * voxels.cubeSize), 
+                            y: pos.y + (ystep * voxels.cubeSize), 
+                            z: pos.z + (zstep * voxels.cubeSize)
+                        }
+                        set(leafpos, opts.leaves);
+                    }
+                }
+            }
+        }
+    }
+    if (opts.treetype === undefined) subspacetree();
+    else {
+        switch (opts.treetype) {
+            case 1:
+                subspacetree();
+                break;
+            case 2:
+                guybrushtree();
+                break;
+            default:
+                subspacetree();
+        }
     }
     
     var pos = position();
@@ -106,5 +159,9 @@ function boundingChunks (chunks) {
         acc.z.max = Math.max(acc.z.max, s[2]);
         
         return acc;
-    }, { x: {}, y: {}, z: {} });
+    }, {
+        x: {}, 
+        y: {}, 
+        z: {}
+    });
 }
