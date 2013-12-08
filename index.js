@@ -24,30 +24,6 @@ module.exports = function (game, opts) {
             z: pos_.z
         };
     }
-   
-    /* TODO: factor out this 'can sustain'/'find solid ground, height map' check
-    var ymax = bounds.y.max * step;
-    var ymin = bounds.y.min * step;
-    if (opts.checkOccupied) {
-        if (occupied(pos_.y)) {
-            for (var y = pos_.y; occupied(y); y += 1);
-            if (y >= ymax) return false;
-            pos_.y = y;
-        }
-        else {
-            for (var y = pos_.y; !occupied(y); y -= 1);
-            if (y <= ymin) return false;
-            pos_.y = y + 1
-        }
-        function occupied (y) {
-            var pos = position();
-            pos.y = y;
-            return y <= ymax && y >= ymin && voxels.voxelAtPosition([pos.x,pos.y,pos.z]);
-        }
-    }
-    */
-    
-    var updated = {};
     
     function subspacetree() {
         var around = [
@@ -56,7 +32,7 @@ module.exports = function (game, opts) {
         [ -1, 1 ], [ -1, 0 ], [ -1, -1 ]
         ];
         for (var y = 0; y < opts.height - 1; y++) {
-            var pos = position();
+            var pos = {x:opts.position.x, y:opts.position.y, z:opts.position.y};
             pos.y += y
             if (set(pos, opts.bark)) break;
             if (y < opts.base) continue;
@@ -78,7 +54,7 @@ module.exports = function (game, opts) {
             return x*x + y*y + z*z <= r*r;
         }
         for (var y = 0; y < opts.height - 1; y++) {
-            var pos = position();
+            var pos = {x:opts.position.x, y:opts.position.y, z:opts.position.y};
             pos.y += y;
             if (set(pos, opts.bark)) break;
         }
@@ -103,7 +79,7 @@ module.exports = function (game, opts) {
         var posstack = [];
         
         var penangle = 0;
-        var pos = position();
+        var pos = {x:opts.position.x, y:opts.position.y, z:opts.position.y};
         pos.y += unitsize * 30;
         function moveForward() {
             var ryaw = penangle * Math.PI/180;
@@ -227,64 +203,27 @@ module.exports = function (game, opts) {
         default:
             subspacetree();
     }
-    
-    
-    var pos = position();
-    //pos.y += y;
-    set(pos, opts.leaves);
 };
 
 function regexRules(rules) {
-        var regexrule = '';
-        rules.forEach(function (rule) {
-            if (regexrule != '') {
-                regexrule = regexrule+ '|' ;
-            }
-            regexrule = regexrule+rule[0];
-        });
-        return new RegExp(regexrule, "g");
-    }
-
-function applyRules(axiom, rules) {
-        function matchRule(match)
-        {
-            for (var i=0;i<rules.length;i++)
-            { 
-                if (rules[i][0] == match) return rules[i][1];
-            }
-            return '';
+    var regexrule = '';
+    rules.forEach(function (rule) {
+        if (regexrule != '') {
+            regexrule = regexrule+ '|' ;
         }
-        return axiom.replace(regexRules(rules), matchRule);
-    }
-        
-function randomChunk (bounds) {
-    var x = Math.random() * (bounds.x.max - bounds.x.min) + bounds.x.min;
-    var y = Math.random() * (bounds.y.max - bounds.y.min) + bounds.y.min;
-    var z = Math.random() * (bounds.z.max - bounds.z.min) + bounds.z.min;
-    return [ x, y, z ].map(Math.floor).join('|');
+        regexrule = regexrule+rule[0];
+    });
+    return new RegExp(regexrule, "g");
 }
 
-function boundingChunks (chunks) {
-    return Object.keys(chunks).reduce(function (acc, key) {
-        var s = key.split('|');
-        if (acc.x.min === undefined) acc.x.min = s[0]
-        if (acc.x.max === undefined) acc.x.max = s[0]
-        if (acc.y.min === undefined) acc.y.min = s[1]
-        if (acc.y.max === undefined) acc.y.max = s[1]
-        if (acc.z.min === undefined) acc.z.min = s[2]
-        if (acc.z.max === undefined) acc.z.max = s[2]
-        
-        acc.x.min = Math.min(acc.x.min, s[0]);
-        acc.x.max = Math.max(acc.x.max, s[0]);
-        acc.y.min = Math.min(acc.y.min, s[1]);
-        acc.y.max = Math.max(acc.y.max, s[1]);
-        acc.z.min = Math.min(acc.z.min, s[2]);
-        acc.z.max = Math.max(acc.z.max, s[2]);
-        
-        return acc;
-    }, {
-        x: {}, 
-        y: {}, 
-        z: {}
-    });
+function applyRules(axiom, rules) {
+    function matchRule(match)
+    {
+        for (var i=0;i<rules.length;i++)
+        { 
+            if (rules[i][0] == match) return rules[i][1];
+        }
+        return '';
+    }
+    return axiom.replace(regexRules(rules), matchRule);
 }
