@@ -4,27 +4,19 @@ module.exports = function (game, opts) {
     if (opts.leaves === undefined) opts.leaves = 2;
     if (!opts.height) opts.height = Math.random() * 16 + 4;
     if (opts.base === undefined) opts.base = opts.height / 3;
-    if (opts.checkOccupied === undefined) opts.checkOccupied = true;
     if (opts.radius === undefined) opts.radius = opts.base;
     if (opts.treetype === undefined) opts.treetype = 1;
+    if (opts.position === undefined) throw "voxel-forest requires position option";
+    if (opts.setBlock === undefined) throw "voxel-forest requires setBlock option";
 
-    var voxels = game.voxels;
-    var bounds = boundingChunks(voxels.chunks);
-    var step = voxels.chunkSize * voxels.cubeSize;
-    if (!opts.position) {
-        var chunk = voxels.chunks[randomChunk(bounds)];
-        opts.position = {
-            x: (chunk.position[0] + Math.random()) * step,
-            y: (chunk.position[1] + Math.random()) * step,
-            z: (chunk.position[2] + Math.random()) * step
-        };
-    }
-    
+    var set = opts.setBlock;
+
     var pos_ = {
         x: opts.position.x, 
         y: opts.position.y, 
         z: opts.position.z
     };
+    // clone position so it can be mutated
     function position () {
         return {
             x: pos_.x, 
@@ -32,19 +24,20 @@ module.exports = function (game, opts) {
             z: pos_.z
         };
     }
-    
+   
+    /* TODO: factor out this 'can sustain'/'find solid ground, height map' check
     var ymax = bounds.y.max * step;
     var ymin = bounds.y.min * step;
     if (opts.checkOccupied) {
         if (occupied(pos_.y)) {
-            for (var y = pos_.y; occupied(y); y += voxels.cubeSize);
+            for (var y = pos_.y; occupied(y); y += 1);
             if (y >= ymax) return false;
             pos_.y = y;
         }
         else {
-            for (var y = pos_.y; !occupied(y); y -= voxels.cubeSize);
+            for (var y = pos_.y; !occupied(y); y -= 1);
             if (y <= ymin) return false;
-            pos_.y = y + voxels.cubeSize;
+            pos_.y = y + 1
         }
         function occupied (y) {
             var pos = position();
@@ -52,6 +45,7 @@ module.exports = function (game, opts) {
             return y <= ymax && y >= ymin && voxels.voxelAtPosition([pos.x,pos.y,pos.z]);
         }
     }
+    */
     
     var updated = {};
     
@@ -63,13 +57,13 @@ module.exports = function (game, opts) {
         ];
         for (var y = 0; y < opts.height - 1; y++) {
             var pos = position();
-            pos.y += y * voxels.cubeSize;
+            pos.y += y
             if (set(pos, opts.bark)) break;
             if (y < opts.base) continue;
             around.forEach(function (offset) {
                 if (Math.random() > 0.5) return;
-                var x = offset[0] * voxels.cubeSize;
-                var z = offset[1] * voxels.cubeSize;
+                var x = offset[0]
+                var z = offset[1]
                 pos.x += x;
                 pos.z += z;
                 set(pos, opts.leaves);
@@ -85,7 +79,7 @@ module.exports = function (game, opts) {
         }
         for (var y = 0; y < opts.height - 1; y++) {
             var pos = position();
-            pos.y += y * voxels.cubeSize;
+            pos.y += y;
             if (set(pos, opts.bark)) break;
         }
         var radius = opts.radius;
@@ -94,9 +88,9 @@ module.exports = function (game, opts) {
                 for (var zstep = -radius; zstep <= radius; zstep++) {
                     if (sphere(xstep,ystep,zstep, radius)) {
                         var leafpos = {
-                            x: pos.x + (xstep * voxels.cubeSize), 
-                            y: pos.y + (ystep * voxels.cubeSize), 
-                            z: pos.z + (zstep * voxels.cubeSize)
+                            x: pos.x + xstep,
+                            y: pos.y + ystep,
+                            z: pos.z + zstep
                         }
                         set(leafpos, opts.leaves);
                     }
@@ -217,7 +211,7 @@ module.exports = function (game, opts) {
         axiom = applyRules(axiom,rules);
         axiom = applyRules(axiom,rules);
         axiom = applyRules(axiom,rules);
-        drawAxiom(axiom, 90, voxels.cubeSize,5);
+        drawAxiom(axiom, 90, 1, 5);
     }
     
     switch (opts.treetype) {
@@ -236,23 +230,8 @@ module.exports = function (game, opts) {
     
     
     var pos = position();
-    pos.y += y * voxels.cubeSize;
+    //pos.y += y;
     set(pos, opts.leaves);
-    
-    Object.keys(updated).forEach(function (key) {
-        game.showChunk(updated[key]);
-    });
-    
-    function set (pos, value) {
-        var ex = voxels.voxelAtPosition([pos.x,pos.y,pos.z]);
-        if (ex) true;
-        voxels.voxelAtPosition([pos.x,pos.y,pos.z], value);
-        var c = voxels.chunkAtPosition([pos.x,pos.y,pos.z]);
-        var key = c.join('|');
-        if (!updated[key] && voxels.chunks[key]) {
-            updated[key] = voxels.chunks[key];
-        }
-    }
 };
 
 function regexRules(rules) {
