@@ -6,8 +6,8 @@ module.exports = function (game, opts) {
     if (opts.base === undefined) opts.base = opts.height / 3;
     if (opts.radius === undefined) opts.radius = opts.base;
     if (opts.treetype === undefined) opts.treetype = 1;
-    if (opts.position === undefined) throw "voxel-forest requires position option";
-    if (opts.setBlock === undefined) throw "voxel-forest requires setBlock option";
+    if (opts.position === undefined) throw "voxel-trees requires position option";
+    if (opts.setBlock === undefined) throw "voxel-trees requires setBlock option";
 
     var set = opts.setBlock;
 

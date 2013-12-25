@@ -1,19 +1,11 @@
 {
-    "name" : "voxel-forest",
+    "name" : "voxel-trees",
     "version" : "0.0.1",
     "description" : "generate voxel trees",
-    "main" : "index.js",
-    "devDependencies" : {
-        "voxel-perlin-terrain" : "~0.0.2",
-        "voxel-engine" : "~0.1.8",
-        "voxel-debris" : "~0.0.2",
-        "ecstatic" : "~0.3.0"
-    },
     "repository" : {
         "type" : "git",
-        "url" : "git://github.com/substack/voxel-forest.git"
+        "url" : "git://github.com/deathcap/voxel-trees.git"
     },
-    "homepage" : "https://github.com/substack/voxel-forest",
     "keywords" : [
         "voxel",
         "game",
