@@ -2,7 +2,8 @@ module.exports = function (opts) {
     if (!opts) opts = {};
     if (opts.bark === undefined) opts.bark = 1;
     if (opts.leaves === undefined) opts.leaves = 2;
-    if (!opts.height) opts.height = Math.random() * 16 + 4;
+    if (opts.random == undefined) opts.random = function() { return Math.random(); };
+    if (!opts.height) opts.height = opts.random() * 16 + 4;
     if (opts.base === undefined) opts.base = opts.height / 3;
     if (opts.radius === undefined) opts.radius = opts.base;
     if (opts.treetype === undefined) opts.treetype = 1;
@@ -23,7 +24,7 @@ module.exports = function (opts) {
             if (set(pos, opts.bark)) break;
             if (y < opts.base) continue;
             around.forEach(function (offset) {
-                if (Math.random() > 0.5) return;
+                if (opts.random() > 0.5) return;
                 var x = offset[0]
                 var z = offset[1]
                 pos.x += x;
