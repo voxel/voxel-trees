@@ -11,20 +11,6 @@ module.exports = function (opts) {
 
     var set = opts.setBlock;
 
-    var pos_ = {
-        x: opts.position.x, 
-        y: opts.position.y, 
-        z: opts.position.z
-    };
-    // clone position so it can be mutated
-    function position () {
-        return {
-            x: pos_.x, 
-            y: pos_.y, 
-            z: pos_.z
-        };
-    }
-    
     function subspacetree() {
         var around = [
         [ 0, 1 ], [ 0, -1 ],
@@ -32,7 +18,7 @@ module.exports = function (opts) {
         [ -1, 1 ], [ -1, 0 ], [ -1, -1 ]
         ];
         for (var y = 0; y < opts.height - 1; y++) {
-            var pos = {x:opts.position.x, y:opts.position.y, z:opts.position.y};
+            var pos = {x:opts.position.x, y:opts.position.y, z:opts.position.z};
             pos.y += y
             if (set(pos, opts.bark)) break;
             if (y < opts.base) continue;
@@ -54,7 +40,7 @@ module.exports = function (opts) {
             return x*x + y*y + z*z <= r*r;
         }
         for (var y = 0; y < opts.height - 1; y++) {
-            var pos = {x:opts.position.x, y:opts.position.y, z:opts.position.y};
+            var pos = {x:opts.position.x, y:opts.position.y, z:opts.position.z};
             pos.y += y;
             if (set(pos, opts.bark)) break;
         }
@@ -79,7 +65,7 @@ module.exports = function (opts) {
         var posstack = [];
         
         var penangle = 0;
-        var pos = {x:opts.position.x, y:opts.position.y, z:opts.position.y};
+        var pos = {x:opts.position.x, y:opts.position.y, z:opts.position.z};
         pos.y += unitsize * 30;
         function moveForward() {
             var ryaw = penangle * Math.PI/180;
