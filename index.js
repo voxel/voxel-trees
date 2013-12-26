@@ -1,4 +1,4 @@
-module.exports = function (game, opts) {
+module.exports = function (opts) {
     if (!opts) opts = {};
     if (opts.bark === undefined) opts.bark = 1;
     if (opts.leaves === undefined) opts.leaves = 2;
