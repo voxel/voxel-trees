@@ -6,13 +6,14 @@ module.exports = function (opts) {
     if (!opts.height) opts.height = opts.random() * 16 + 4;
     if (opts.base === undefined) opts.base = opts.height / 3;
     if (opts.radius === undefined) opts.radius = opts.base;
-    if (opts.treetype === undefined) opts.treetype = 1;
+    if (opts.treeType === undefined) opts.treeType = 'subspace';
     if (opts.position === undefined) throw "voxel-trees requires position option";
     if (opts.setBlock === undefined) throw "voxel-trees requires setBlock option";
 
     var set = opts.setBlock;
 
-    function subspacetree() {
+    var generators = {
+    subspace: function() {
         var around = [
         [ 0, 1 ], [ 0, -1 ],
         [ 1, 1 ], [ 1, 0 ], [ 1, -1 ],
@@ -34,9 +35,9 @@ module.exports = function (opts) {
                 pos.z -= z;
             });
         }
-    }
+    },
 
-    function guybrushtree() {
+    guybrush: function() {
         var sphere = function(x,y,z, r) {
             return x*x + y*y + z*z <= r*r;
         }
@@ -60,112 +61,111 @@ module.exports = function (opts) {
                 }
             }
         }
-    }
-    
-    function drawAxiom(axiom, angle, unitsize, units) {
-        var posstack = [];
-        
-        var penangle = 0;
-        var pos = {x:opts.position.x, y:opts.position.y, z:opts.position.z};
-        pos.y += unitsize * 30;
-        function moveForward() {
-            var ryaw = penangle * Math.PI/180;
-            for (var i = 0; i < units; i++) {
-                pos.y += unitsize * Math.cos(ryaw);
-                pos.z += unitsize * Math.sin(ryaw);
-                set(pos,opts.leaves);
-            }
-        }
+    },
 
-        function setPoint() {
-            set(pos, opts.bark);
-        }
-        function setMaterial(value) {
-            mindex = value;
-        }
-        function yaw(angle) {
-            penangle += angle;
-        }
-        function pitch(angle) {
-            //turtle.pitch += angle;
-        }
-        function roll(angle) {
-            //turtle.roll += angle;
-        }
-        function PushState() {
-            //penstack.push(turtle);
-            posstack.push(pos);
-        }
-        function PopState() {
-          //  turtle = penstack.pop();
-            pos = posstack.pop();
-        }
-        
-        //F  - move forward one unit with the pen down
-        //G  - move forward one unit with the pen up
-        //#  - Changes draw medium.
-
-        // +  - yaw the turtle right by angle parameter
-        // -  - yaw the turtle left by angle parameter
-        // &  - pitch the turtle down by angle parameter
-        // ^  - pitch the turtle up by angle parameter
-        // /  - roll the turtle to the right by angle parameter
-        // *  - roll the turtle to the left by angle parameter
-        // [  - save in stack current state info
-        // ]  - recover from stack state info
-        for (var i = 0; i < axiom.length; i++) {
-            var c = axiom.charAt(i);
-            switch(c) {
-                case 'F':
-                    moveForward();
-                    setPoint();
-                    break;
-                case '+':
-                    yaw(+angle);
-                    break;
-                case '-':
-                    yaw(-angle);
-                    break;
-                case '&':
-                    pitch(+angle);
-                    break;
-                case '^':
-                    pitch(-angle);
-                    break;
-                case '/':
-                    roll(+angle);
-                    break;
-                case '*':
-                    roll(-angle);
-                    break;
-                case 'G':
-                    moveForward();
-                    break;
-                case '[':
-                    PushState();
-                    break;
-                case ']':
-                    PopState();
-                    break;
-                case '0':
-                    setMaterial(0);
-                    break;
-                case '1':
-                    setMaterial(1);
-                    break;
-                case '2':
-                    setMaterial(2);
-                    break;
-                case '3':
-                    setMaterial(3);
-                    break;
-
-            }
-        }
+    fractal: function() {
+        function drawAxiom(axiom, angle, unitsize, units) {
+            var posstack = [];
             
-    }
+            var penangle = 0;
+            var pos = {x:opts.position.x, y:opts.position.y, z:opts.position.z};
+            pos.y += unitsize * 30;
+            function moveForward() {
+                var ryaw = penangle * Math.PI/180;
+                for (var i = 0; i < units; i++) {
+                    pos.y += unitsize * Math.cos(ryaw);
+                    pos.z += unitsize * Math.sin(ryaw);
+                    set(pos,opts.leaves);
+                }
+            }
 
-    function fractaltree() {
+            function setPoint() {
+                set(pos, opts.bark);
+            }
+            function setMaterial(value) {
+                mindex = value;
+            }
+            function yaw(angle) {
+                penangle += angle;
+            }
+            function pitch(angle) {
+                //turtle.pitch += angle;
+            }
+            function roll(angle) {
+                //turtle.roll += angle;
+            }
+            function PushState() {
+                //penstack.push(turtle);
+                posstack.push(pos);
+            }
+            function PopState() {
+              //  turtle = penstack.pop();
+                pos = posstack.pop();
+            }
+            
+            //F  - move forward one unit with the pen down
+            //G  - move forward one unit with the pen up
+            //#  - Changes draw medium.
+
+            // +  - yaw the turtle right by angle parameter
+            // -  - yaw the turtle left by angle parameter
+            // &  - pitch the turtle down by angle parameter
+            // ^  - pitch the turtle up by angle parameter
+            // /  - roll the turtle to the right by angle parameter
+            // *  - roll the turtle to the left by angle parameter
+            // [  - save in stack current state info
+            // ]  - recover from stack state info
+            for (var i = 0; i < axiom.length; i++) {
+                var c = axiom.charAt(i);
+                switch(c) {
+                    case 'F':
+                        moveForward();
+                        setPoint();
+                        break;
+                    case '+':
+                        yaw(+angle);
+                        break;
+                    case '-':
+                        yaw(-angle);
+                        break;
+                    case '&':
+                        pitch(+angle);
+                        break;
+                    case '^':
+                        pitch(-angle);
+                        break;
+                    case '/':
+                        roll(+angle);
+                        break;
+                    case '*':
+                        roll(-angle);
+                        break;
+                    case 'G':
+                        moveForward();
+                        break;
+                    case '[':
+                        PushState();
+                        break;
+                    case ']':
+                        PopState();
+                        break;
+                    case '0':
+                        setMaterial(0);
+                        break;
+                    case '1':
+                        setMaterial(1);
+                        break;
+                    case '2':
+                        setMaterial(2);
+                        break;
+                    case '3':
+                        setMaterial(3);
+                        break;
+
+                }
+            }
+        }
+
         var axiom = "FX";
         var rules = [ ["X", "X+YF+"], ["Y", "-FX-Y"]];
         axiom = applyRules(axiom,rules);
@@ -176,20 +176,11 @@ module.exports = function (opts) {
         axiom = applyRules(axiom,rules);
         drawAxiom(axiom, 90, 1, 5);
     }
-    
-    switch (opts.treetype) {
-        case 1:
-            subspacetree();
-            break;
-        case 2:
-            guybrushtree();
-            break;
-        case 3:
-            fractaltree();
-            break;
-        default:
-            subspacetree();
-    }
+    };
+  
+    if (!generators[opts.treeType]) throw 'voxel-trees invalid treeType: ' + opts.treeType;
+
+    generators[opts.treeType]();
 };
 
 function regexRules(rules) {
