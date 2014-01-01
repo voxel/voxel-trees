@@ -1,21 +1,21 @@
 {
-    "name" : "voxel-trees",
-    "version" : "0.0.1",
-    "description" : "generate voxel trees",
-    "repository" : {
-        "type" : "git",
-        "url" : "git://github.com/deathcap/voxel-trees.git"
-    },
-    "keywords" : [
-        "voxel",
-        "game",
-        "tree",
-        "forest"
-    ],
-    "author" : {
-        "name" : "James Halliday",
-        "email" : "mail@substack.net",
-        "url" : "http://substack.net"
-    },
-    "license" : "MIT"
+  "name": "voxel-trees",
+  "version": "0.1.0",
+  "description": "generate voxel trees",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/deathcap/voxel-trees.git"
+  },
+  "keywords": [
+    "voxel",
+    "game",
+    "tree",
+    "forest"
+  ],
+  "author": {
+    "name": "James Halliday",
+    "email": "mail@substack.net",
+    "url": "http://substack.net"
+  },
+  "license": "MIT"
 }
