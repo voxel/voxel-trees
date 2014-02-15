@@ -7,8 +7,8 @@ module.exports = function (opts) {
     if (opts.base === undefined) opts.base = opts.height / 3;
     if (opts.radius === undefined) opts.radius = opts.base;
     if (opts.treeType === undefined) opts.treeType = 'subspace';
-    if (opts.position === undefined) throw "voxel-trees requires position option";
-    if (opts.setBlock === undefined) throw "voxel-trees requires setBlock option";
+    if (opts.position === undefined) throw new Error('voxel-trees requires position option');
+    if (opts.setBlock === undefined) throw new Error('voxel-trees requires setBlock option');
 
     var set = opts.setBlock;
 
@@ -178,7 +178,7 @@ module.exports = function (opts) {
     }
     };
   
-    if (!generators[opts.treeType]) throw 'voxel-trees invalid treeType: ' + opts.treeType;
+    if (!generators[opts.treeType]) throw new Error('voxel-trees invalid treeType: ' + opts.treeType);
 
     generators[opts.treeType]();
 };
