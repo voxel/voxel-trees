@@ -20,19 +20,19 @@ module.exports = function (opts) {
         [ -1, 1 ], [ -1, 0 ], [ -1, -1 ]
         ];
         for (var y = 0; y < opts.height - 1; y++) {
-            var pos = {x:opts.position.x, y:opts.position.y, z:opts.position.z};
-            pos.y += y
+            var pos = [opts.position.x, opts.position.y, opts.position.z];
+            pos[1] += y
             if (set(pos, opts.bark)) break;
             if (y < opts.base) continue;
             around.forEach(function (offset) {
                 if (opts.random() > 0.5) return;
                 var x = offset[0]
                 var z = offset[1]
-                pos.x += x;
-                pos.z += z;
+                pos[0] += x;
+                pos[2] += z;
                 set(pos, opts.leaves);
-                pos.x -= x;
-                pos.z -= z;
+                pos[0] -= x;
+                pos[2] -= z;
             });
         }
     },
@@ -42,8 +42,8 @@ module.exports = function (opts) {
             return x*x + y*y + z*z <= r*r;
         }
         for (var y = 0; y < opts.height - 1; y++) {
-            var pos = {x:opts.position.x, y:opts.position.y, z:opts.position.z};
-            pos.y += y;
+            var pos = [opts.position.x, opts.position.y, opts.position.z];
+            pos[1] += y;
             if (set(pos, opts.bark)) break;
         }
         var radius = opts.radius;
@@ -51,11 +51,11 @@ module.exports = function (opts) {
             for (var ystep = -radius; ystep <= radius; ystep++) {
                 for (var zstep = -radius; zstep <= radius; zstep++) {
                     if (sphere(xstep,ystep,zstep, radius)) {
-                        var leafpos = {
-                            x: pos.x + xstep,
-                            y: pos.y + ystep,
-                            z: pos.z + zstep
-                        }
+                        var leafpos = [
+                            pos[0] + xstep,
+                            pos[1] + ystep,
+                            pos[2] + zstep
+                        ]
                         set(leafpos, opts.leaves);
                     }
                 }
@@ -68,13 +68,13 @@ module.exports = function (opts) {
             var posstack = [];
             
             var penangle = 0;
-            var pos = {x:opts.position.x, y:opts.position.y, z:opts.position.z};
-            pos.y += unitsize * 30;
+            var pos = [opts.position.x, opts.position.y, opts.position.z];
+            pos[1] += unitsize * 30;
             function moveForward() {
                 var ryaw = penangle * Math.PI/180;
                 for (var i = 0; i < units; i++) {
-                    pos.y += unitsize * Math.cos(ryaw);
-                    pos.z += unitsize * Math.sin(ryaw);
+                    pos[1] += unitsize * Math.cos(ryaw);
+                    pos[2] += unitsize * Math.sin(ryaw);
                     set(pos,opts.leaves);
                 }
             }
